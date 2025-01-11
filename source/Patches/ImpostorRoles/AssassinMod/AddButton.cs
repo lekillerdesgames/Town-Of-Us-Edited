@@ -70,7 +70,7 @@ namespace TownOfUs.Roles.AssassinMod
             var cycleRendererBack = cycleBack.GetComponent<SpriteRenderer>();
             cycleRendererBack.sprite = CycleBackSprite;
             cycleBack.transform.localPosition = new Vector3(-0.5f, 0.15f, -2f);
-            cycleBack.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+            cycleBack.transform.localScale = new Vector3(0.23f, 0.23f, 0.23f);
             cycleBack.layer = 5;
             cycleBack.transform.parent = parent;
             var cycleEventBack = new Button.ButtonClickedEvent();
@@ -85,7 +85,7 @@ namespace TownOfUs.Roles.AssassinMod
             var cycleRendererForward = cycleForward.GetComponent<SpriteRenderer>();
             cycleRendererForward.sprite = CycleForwardSprite;
             cycleForward.transform.localPosition = new Vector3(-0.2f, 0.15f, -2f);
-            cycleForward.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+            cycleForward.transform.localScale = new Vector3(0.23f, 0.23f, 0.23f);
             cycleForward.layer = 5;
             cycleForward.transform.parent = parent;
             var cycleEventForward = new Button.ButtonClickedEvent();
@@ -100,7 +100,7 @@ namespace TownOfUs.Roles.AssassinMod
             var guessRenderer = guess.GetComponent<SpriteRenderer>();
             guessRenderer.sprite = GuessSprite;
             guess.transform.localPosition = new Vector3(-0.35f, -0.15f, -2f);
-            guess.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+            guess.transform.localScale = new Vector3(0.23f, 0.23f, 0.23f);
             guess.layer = 5;
             guess.transform.parent = parent;
             var guessEvent = new Button.ButtonClickedEvent();
