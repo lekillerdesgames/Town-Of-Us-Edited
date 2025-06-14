@@ -11,16 +11,18 @@ namespace TownOfUsEdited.Patches
 {
     public class AssetLoader
     {
-        public static string[] AssetBundles = { "trappershader", "soundvision" };
+        public static string[] AssetBundles = { "trappershader", "soundvision", "touebundle" };
 
         public AssetLoader() { Initialize(); }
 
         public void Initialize()
         {
-            Array.ForEach(AssetBundles, x => {
+            Array.ForEach(AssetBundles, x =>
+            {
                 var b = loadBundle(x);
                 bundles.Add(b.name, b);
-                b.GetAllAssetNames().ToList().ForEach(y => {
+                b.GetAllAssetNames().ToList().ForEach(y =>
+                {
                     objectname_to_bundle.Add(ConvertToBaseName(y), x);
                 });
             });
@@ -46,10 +48,24 @@ namespace TownOfUsEdited.Patches
             return asset;
         }
 
-        private Dictionary<string, AssetBundle> bundles = new Dictionary<string, AssetBundle>();
+        public static Dictionary<string, AssetBundle> bundles = new Dictionary<string, AssetBundle>();
         private Dictionary<string, string> objectname_to_bundle = new Dictionary<string, string>();
         private Dictionary<string, UnityObject> loadedObjects = new Dictionary<string, UnityObject>();
 
+        public static RuntimeAnimatorController LoadController(AssetBundle bundle, string name)
+        {
+            return bundle.LoadAsset<RuntimeAnimatorController>(name);
+        }
+
+        public static AnimationClip LoadAnimationClip(AssetBundle bundle, string name)
+        {
+            return bundle.LoadAsset<AnimationClip>(name);
+        }
+
+        public static TMPro.TMP_SpriteAsset LoadSpriteAsset(AssetBundle bundle, string name)
+        {
+            return bundle.LoadAsset<TMPro.TMP_SpriteAsset>(name);
+        }
 
         public T Get<T>(string name) where T : UnityObject
         {

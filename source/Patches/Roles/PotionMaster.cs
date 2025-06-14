@@ -60,7 +60,6 @@ namespace TownOfUsEdited.Roles
         }
         public void Swoop()
         {
-            Utils.Swoop(Player);
             if (Player.Data.IsDead)
             {
                 TimeRemaining = 0f;

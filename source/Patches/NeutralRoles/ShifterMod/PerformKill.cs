@@ -745,7 +745,6 @@ namespace TownOfUsEdited.Patches.NeutralRoles.ShifterMod
                 if (glitchRole.IsUsingMimic)
                 {
                 Utils.Unmorph(glitchRole.Player);
-                Utils.Rpc(CustomRPC.UnMimic, shifter.PlayerId);
                 glitchRole.IsUsingMimic = false;
                 }
                 glitchRole.MimicCooldown = CustomGameOptions.MimicCooldown;

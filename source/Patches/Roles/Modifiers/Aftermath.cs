@@ -10,6 +10,8 @@ using TownOfUsEdited.ImpostorRoles.ImpostorMod;
 using Hazel;
 using System.Linq;
 using TownOfUsEdited.Patches;
+using TownOfUsEdited.ImpostorRoles.MorphlingMod;
+using TownOfUsEdited.ImpostorRoles.SwooperMod;
 
 namespace TownOfUsEdited.Roles.Modifiers
 {
@@ -146,14 +148,13 @@ namespace TownOfUsEdited.Roles.Modifiers
             {
                 if (morphling.Player.GetCustomOutfitType() != CustomPlayerOutfitType.Morph)
                 {
-                    Utils.Rpc(CustomRPC.Morph, PlayerControl.LocalPlayer.PlayerId, corpse.PlayerId);
-                    morphling.TimeRemaining = CustomGameOptions.MorphlingDuration;
                     var shapeshifter = RoleManager.Instance.GetRole(AmongUs.GameOptions.RoleTypes.Shapeshifter).Cast<ShapeshifterRole>();
                     Sprite MorphSprite = shapeshifter.Ability.Image;
                     if (morphling.SampledPlayer == null) morphling._morphButton.graphic.sprite = MorphSprite;
                     morphling.SampledPlayer = corpse;
                     morphling.MorphedPlayer = corpse;
-                    Utils.Morph(morphling.Player, corpse, true);
+                    Utils.Rpc(CustomRPC.Morph, PlayerControl.LocalPlayer.PlayerId, morphling.SampledPlayer.PlayerId);
+                    Coroutines.Start(PerformKillMorphling.Morph(morphling));
                 }
             }
             else if (role is Swooper swooper)
@@ -161,8 +162,7 @@ namespace TownOfUsEdited.Roles.Modifiers
                 if (swooper.Player.GetCustomOutfitType() != CustomPlayerOutfitType.Swooper)
                 {
                     Utils.Rpc(CustomRPC.Swoop, PlayerControl.LocalPlayer.PlayerId);
-                    swooper.TimeRemaining = CustomGameOptions.SwoopDuration;
-                    swooper.Swoop();
+                    Coroutines.Start(PerformKillSwooper.Swoop(swooper));
                 }
             }
             else if (role is Poisoner poisoner)

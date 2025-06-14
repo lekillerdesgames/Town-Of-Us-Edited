@@ -40,35 +40,87 @@ namespace TownOfUsEdited
         internal static bool ShowDeadBodies = false;
         private static NetworkedPlayerInfo voteTarget = null;
 
-        public static void Morph(PlayerControl player, PlayerControl MorphedPlayer, bool resetAnim = false)
+        public static void Morph(PlayerControl player, PlayerControl MorphedPlayer, bool resetAnim = false, bool playAnim = false)
         {
             if (PlayerControl.LocalPlayer.IsHypnotised()) return;
             if (CamouflageUnCamouflage.IsCamoed) return;
+
             if (player.GetCustomOutfitType() != CustomPlayerOutfitType.Morph)
-                player.SetOutfit(CustomPlayerOutfitType.Morph, MorphedPlayer.Data.DefaultOutfit);
+            {
+                Coroutines.Start(MorphAnimation(player, MorphedPlayer, playAnim));
+            }
         }
 
-        public static void Swoop(PlayerControl player)
+        public static IEnumerator MorphAnimation(PlayerControl player, PlayerControl MorphedPlayer, bool playAnim)
+        {
+            Color startingColor = Palette.PlayerColors[player.Data.DefaultOutfit.ColorId];
+            Color endingColor = Palette.PlayerColors[MorphedPlayer.Data.DefaultOutfit.ColorId];
+            Color startingShadowColor = Palette.ShadowColors[player.Data.DefaultOutfit.ColorId];
+            Color endingShadowColor = Palette.ShadowColors[MorphedPlayer.Data.DefaultOutfit.ColorId];
+            float duration = 2f;
+            for (float t = 0f; t < duration; t += Time.deltaTime)
+            {
+                if (player.Data.IsDead)
+                {
+                    Unmorph(player);
+                    yield break;
+                }
+                if (!playAnim) continue;
+                player.cosmetics.SetBodyCosmeticsVisible(false);
+                Color color = Color.Lerp(startingColor, endingColor, t / duration);
+                Color shadowColor = Color.Lerp(startingShadowColor, endingShadowColor, t / duration);
+                player.myRend().material.SetColor(PlayerMaterial.BackColor, shadowColor);
+                player.myRend().material.SetColor(PlayerMaterial.BodyColor, color);
+                player.myRend().material.SetColor(PlayerMaterial.VisorColor, Palette.VisorColor);
+                yield return null;
+            }
+            player.myRend().material.SetColor(PlayerMaterial.BackColor, startingShadowColor);
+            player.myRend().material.SetColor(PlayerMaterial.BodyColor, startingColor);
+            player.myRend().material.SetColor(PlayerMaterial.VisorColor, Palette.VisorColor);
+            player.cosmetics.SetBodyCosmeticsVisible(true);
+            player.SetOutfit(CustomPlayerOutfitType.Morph, MorphedPlayer.Data.DefaultOutfit);
+        }
+
+        public static void Swoop(PlayerControl player, bool playAnim = false)
         {
             if (PlayerControl.LocalPlayer.IsHypnotised()) return;
-            var color = Color.clear;
-            if (player == PlayerControl.LocalPlayer || PlayerControl.LocalPlayer.Data.IsDead || (PlayerControl.LocalPlayer.Data.IsImpostor() && player.Data.IsImpostor())) color.a = 0.1f;
+            Coroutines.Start(SwoopAnimation(player, playAnim));
+        }
 
-            if (player.GetCustomOutfitType() != CustomPlayerOutfitType.Swooper)
+        public static IEnumerator SwoopAnimation(PlayerControl player, bool playAnim)
+        {
+            Color startingColor = Palette.PlayerColors[player.Data.DefaultOutfit.ColorId];
+            Color endingColor = Color.clear;
+            float duration = 2f;
+            for (float t = 0f; t < duration; t += Time.deltaTime)
             {
-                player.SetOutfit(CustomPlayerOutfitType.Swooper, new NetworkedPlayerInfo.PlayerOutfit()
+                if (player.Data.IsDead)
                 {
-                    ColorId = player.CurrentOutfit.ColorId,
-                    HatId = "",
-                    SkinId = "",
-                    VisorId = "",
-                    PlayerName = " ",
-                    PetId = ""
-                });
+                    Unmorph(player);
+                    yield break;
+                }
+                if (!playAnim) continue;
+                player.cosmetics.SetBodyCosmeticsVisible(false);
+                if (player == PlayerControl.LocalPlayer || PlayerControl.LocalPlayer.Data.IsDead || (PlayerControl.LocalPlayer.Data.IsImpostor() && player.Data.IsImpostor())) endingColor.a = 0.1f;
+                Color color = Color.Lerp(startingColor, endingColor, t / duration);
                 player.myRend().color = color;
-                player.nameText().color = Color.clear;
-                player.cosmetics.colorBlindText.color = Color.clear;
+                yield return null;
             }
+            var finalColor = Color.clear;
+            if (player == PlayerControl.LocalPlayer || PlayerControl.LocalPlayer.Data.IsDead || (PlayerControl.LocalPlayer.Data.IsImpostor() && player.Data.IsImpostor())) finalColor.a = 0.1f;
+            player.SetOutfit(CustomPlayerOutfitType.Swooper, new NetworkedPlayerInfo.PlayerOutfit()
+            {
+                ColorId = player.CurrentOutfit.ColorId,
+                HatId = "",
+                SkinId = "",
+                VisorId = "",
+                PlayerName = " ",
+                PetId = ""
+            });
+            player.myRend().color = finalColor;
+            player.nameText().color = Color.clear;
+            player.cosmetics.colorBlindText.color = Color.clear;
+            player.cosmetics.SetBodyCosmeticsVisible(true);
         }
 
         public static void Unmorph(PlayerControl player)
@@ -1544,6 +1596,9 @@ namespace TownOfUsEdited
 
                 killer.isKilling = true;
                 target.isKilling = true;
+
+                Animations.StopAllAnimations(killer);
+                Animations.StopAllAnimations(target);
 
                 if (ShowShield.DiedFirst == "") ShowShield.DiedFirst = target.GetDefaultOutfit().PlayerName;
 

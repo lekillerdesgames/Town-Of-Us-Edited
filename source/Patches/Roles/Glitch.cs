@@ -319,12 +319,13 @@ namespace TownOfUsEdited.Roles
 
             public static IEnumerator Mimic(Glitch __instance, PlayerControl mimicPlayer)
             {
-                Utils.Rpc(CustomRPC.SetMimic, PlayerControl.LocalPlayer.PlayerId, mimicPlayer.PlayerId);
-
                 var abilityUsed = Utils.AbilityUsed(PlayerControl.LocalPlayer);
                 if (!abilityUsed) yield break;
 
-                Utils.Morph(__instance.Player, mimicPlayer);
+                Utils.Rpc(CustomRPC.SetMimic, PlayerControl.LocalPlayer.PlayerId, mimicPlayer.PlayerId);
+                Utils.Morph(__instance.Player, mimicPlayer, playAnim: true);
+                __instance.MimicCooldown = 2f;
+                yield return new WaitForSeconds(2f);
 
                 var mimicActivation = DateTime.UtcNow;
                 var mimicText = new GameObject("_Player").AddComponent<ImportantTextTask>();
@@ -360,7 +361,6 @@ namespace TownOfUsEdited.Roles
                         yield break;
                     }
 
-                    Utils.Morph(__instance.Player, mimicPlayer);
                     __instance.MimicButton.SetCoolDown(CustomGameOptions.MimicDuration - (float)totalMimickTime,
                         CustomGameOptions.MimicDuration);
 

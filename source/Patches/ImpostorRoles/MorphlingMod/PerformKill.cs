@@ -1,12 +1,13 @@
-﻿using System;
+﻿using System.Collections;
 using HarmonyLib;
+using Reactor.Utilities;
 using TownOfUsEdited.Roles;
 using UnityEngine;
 
 namespace TownOfUsEdited.ImpostorRoles.MorphlingMod
 {
     [HarmonyPatch(typeof(KillButton), nameof(KillButton.DoClick))]
-    public class PerformKill
+    public class PerformKillMorphling
     {
         public static Sprite SampleSprite => TownOfUsEdited.SampleSprite;
 
@@ -52,15 +53,22 @@ namespace TownOfUsEdited.ImpostorRoles.MorphlingMod
                     var abilityUsed = Utils.AbilityUsed(PlayerControl.LocalPlayer);
                     if (!abilityUsed) return false;
                     Utils.Rpc(CustomRPC.Morph, PlayerControl.LocalPlayer.PlayerId, role.SampledPlayer.PlayerId);
-                    role.TimeRemaining = CustomGameOptions.MorphlingDuration;
                     role.MorphedPlayer = role.SampledPlayer;
-                    Utils.Morph(role.Player, role.SampledPlayer, true);
+                    Coroutines.Start(Morph(role));
                 }
 
                 return false;
             }
 
             return true;
+        }
+
+        public static IEnumerator Morph(Morphling role)
+        {
+            Utils.Morph(role.Player, role.MorphedPlayer, true, true);
+            role.Cooldown = 2f;
+            yield return new WaitForSeconds(2f);
+            role.TimeRemaining = CustomGameOptions.MorphlingDuration;
         }
     }
 }

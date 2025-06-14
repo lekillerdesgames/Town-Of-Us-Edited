@@ -15,14 +15,14 @@ namespace TownOfUsEdited
             {
                 if (ShipStatus.Instance != null)
                 {
-                    if (Utils.CommsCamouflaged())
+                    if (Utils.CommsCamouflaged() && !CommsEnabled)
                     {
                         CommsEnabled = true;
                         Utils.GroupCamouflage();
                     }
                 }
 
-                if (CommsEnabled)
+                if (CommsEnabled && !Utils.CommsCamouflaged())
                 {
                     CommsEnabled = false;
                     Utils.UnCamouflage();

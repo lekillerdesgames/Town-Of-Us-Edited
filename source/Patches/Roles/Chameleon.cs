@@ -39,7 +39,6 @@ namespace TownOfUsEdited.Roles
         {
             Enabled = true;
             TimeRemaining -= Time.deltaTime;
-            Utils.Swoop(Player);
             if (Player.Data.IsDead)
             {
                 TimeRemaining = 0f;

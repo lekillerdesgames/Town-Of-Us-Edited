@@ -63,6 +63,10 @@ using TownOfUsEdited.Patches.CrewmateRoles.JailorMod;
 using TownOfUsEdited.WerewolfRoles.TalkativeWolfMod.ChatPatch;
 using System.Collections;
 using Sentry.Unity.NativeUtils;
+using TownOfUsEdited.ImpostorRoles.MorphlingMod;
+using TownOfUsEdited.CrewmateRoles.ChameleonMod;
+using TownOfUsEdited.Patches.CovenRoles.PotionMasterMod;
+using TownOfUsEdited.ImpostorRoles.SwooperMod;
 
 namespace TownOfUsEdited
 {
@@ -1708,6 +1712,19 @@ namespace TownOfUsEdited
                                 mutant2.IsTransformed = false;
                                 break;
 
+                            case CustomRPC.Animate:
+                                if (Animations.waveController == null) Animations.waveController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "wave_0.controller");
+                                if (Animations.boingController == null) Animations.boingController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "Boing_0.controller");
+                                var animation = reader.ReadString();
+                                var playerToAnimate = Utils.PlayerById(reader.ReadByte());
+                                var hidePlayer = reader.ReadBoolean();
+                                RuntimeAnimatorController Controller = null;
+                                if (animation == "Bean Dance") Controller = Animations.boingController;
+                                else if (animation == "Wave") Controller = Animations.waveController;
+                                if (PlayerControl.LocalPlayer) Coroutines.Start(Animations.AnimatePlayer(Controller, playerToAnimate, hidePlayer));
+                                else Coroutines.Start(WaitForLocalAnim(Controller, playerToAnimate, hidePlayer));
+                                break;
+
                             case CustomRPC.Rewind:
                                 var TimeLordPlayer = Utils.PlayerById(reader.ReadByte());
                                 var TimeLordRole = Role.GetRole<TimeLord>(TimeLordPlayer);
@@ -1963,13 +1980,7 @@ namespace TownOfUsEdited
                                 glitchRole.MimicTarget = mimicPlayer;
                                 glitchRole.IsUsingMimic = true;
                                 glitchRole.Enabled = true;
-                                Utils.Morph(glitchPlayer, mimicPlayer);
-                                break;
-                            case CustomRPC.UnMimic:
-                                var glitchPlayer1 = Utils.PlayerById(reader.ReadByte());
-                                var glitchRole1 = Role.GetRole<Glitch>(glitchPlayer1);
-                                glitchRole1.IsUsingMimic = false;
-                                Utils.Unmorph(glitchPlayer1);
+                                Utils.Morph(glitchPlayer, mimicPlayer, playAnim:true);
                                 break;
                             case CustomRPC.RpcResetAnim:
                                 var animPlayer = Utils.PlayerById(reader.ReadByte());
@@ -2035,8 +2046,8 @@ namespace TownOfUsEdited
                                 var morphling = Utils.PlayerById(reader.ReadByte());
                                 var morphTarget = Utils.PlayerById(reader.ReadByte());
                                 var morphRole = Role.GetRole<Morphling>(morphling);
-                                morphRole.TimeRemaining = CustomGameOptions.MorphlingDuration;
                                 morphRole.MorphedPlayer = morphTarget;
+                                Coroutines.Start(PerformKillMorphling.Morph(morphRole));
                                 break;
                             case CustomRPC.UnMorph:
                                 var morphling1 = Utils.PlayerById(reader.ReadByte());
@@ -2177,14 +2188,12 @@ namespace TownOfUsEdited
                             case CustomRPC.Swoop:
                                 var swooper = Utils.PlayerById(reader.ReadByte());
                                 var swooperRole = Role.GetRole<Swooper>(swooper);
-                                swooperRole.TimeRemaining = CustomGameOptions.SwoopDuration;
-                                swooperRole.Swoop();
+                                Coroutines.Start(PerformKillSwooper.Swoop(swooperRole));
                                 break;
                             case CustomRPC.ChameleonSwoop:
                                 var chameleon = Utils.PlayerById(reader.ReadByte());
                                 var chameleonRole = Role.GetRole<Chameleon>(chameleon);
-                                chameleonRole.TimeRemaining = CustomGameOptions.ChamSwoopDuration;
-                                chameleonRole.Swoop();
+                                Coroutines.Start(PerformKillChameleon.Swoop(chameleonRole));
                                 break;
                             case CustomRPC.UnSwoop:
                                 var swooper1 = Utils.PlayerById(reader.ReadByte());
@@ -2750,8 +2759,9 @@ namespace TownOfUsEdited
                                 var pmRole = Role.GetRole<PotionMaster>(pm);
                                 var potion = reader.ReadString();
                                 pmRole.Potion = potion;
-                                pmRole.TimeRemaining = CustomGameOptions.PotionDuration;
                                 pmRole.UsePotion();
+                                if (potion != "Invisibility") pmRole.TimeRemaining = CustomGameOptions.PotionDuration;
+                                else Coroutines.Start(PerformKillPotionMaster.Swoop(pmRole));
                                 break;
                             case CustomRPC.Execution:
                                 var executed = Utils.PlayerById(reader.ReadByte());
@@ -3054,6 +3064,14 @@ namespace TownOfUsEdited
             {
                 while (!PlayerControl.LocalPlayer) yield return null;
                 Utils.Rpc(CustomRPC.ReceiveStatusCheck, PlayerControl.LocalPlayer.PlayerId, playerIdRequester, EOSManager.Instance.FriendCode, DevStatus.hidden);
+                yield break;
+            }
+            
+            public static IEnumerator WaitForLocalAnim(RuntimeAnimatorController controller, PlayerControl animatingPlayer, bool hidePlayer)
+            {
+                while (!PlayerControl.LocalPlayer) yield return null;
+                yield return new WaitForSeconds(0.5f);
+                Coroutines.Start(Animations.AnimatePlayer(controller, animatingPlayer, hidePlayer));
                 yield break;
             }
         }

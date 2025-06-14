@@ -74,8 +74,10 @@ namespace TownOfUsEdited.Patches.Modifiers.LoversMod
                 var position2 = Background.transform.localPosition;
                 Pos = new Vector3(position2.x - 1.2f, position2.y, position2.z);
             }
-            bool hasCustomChat = PlayerControl.LocalPlayer.Is(RoleEnum.Vampire) || PlayerControl.LocalPlayer.Is(RoleEnum.SerialKiller) ||
-            PlayerControl.LocalPlayer.Is(Faction.Coven) || PlayerControl.LocalPlayer.Is(Faction.Impostors);
+            bool hasCustomChat = (PlayerControl.LocalPlayer.Is(RoleEnum.Vampire) && CustomGameOptions.VampireChat) ||
+            (PlayerControl.LocalPlayer.Is(RoleEnum.SerialKiller) && CustomGameOptions.SKChat) ||
+            (PlayerControl.LocalPlayer.Is(Faction.Coven) && CustomGameOptions.CovenChat) ||
+            (PlayerControl.LocalPlayer.Is(Faction.Impostors) && CustomGameOptions.ImpostorChat);
             LoversChatButton.gameObject.SetActive(true);
             var position = HudManager.Instance.Chat.transform.localPosition;
             if (!HudManager.Instance.Chat.isActiveAndEnabled && !hasCustomChat)
