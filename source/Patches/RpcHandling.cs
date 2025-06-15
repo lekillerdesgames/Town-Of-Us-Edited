@@ -1715,12 +1715,16 @@ namespace TownOfUsEdited
                             case CustomRPC.Animate:
                                 if (Animations.waveController == null) Animations.waveController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "wave_0.controller");
                                 if (Animations.boingController == null) Animations.boingController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "Boing_0.controller");
+                                if (Animations.sleepyController == null) Animations.sleepyController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "sleepy_0.controller");
+                                if (Animations.rollController == null) Animations.rollController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "roll_0.controller");
                                 var animation = reader.ReadString();
                                 var playerToAnimate = Utils.PlayerById(reader.ReadByte());
                                 var hidePlayer = reader.ReadBoolean();
                                 RuntimeAnimatorController Controller = null;
                                 if (animation == "Bean Dance") Controller = Animations.boingController;
                                 else if (animation == "Wave") Controller = Animations.waveController;
+                                else if (animation == "Sleepy") Controller = Animations.sleepyController;
+                                else if (animation == "Roll") Controller = Animations.rollController;
                                 if (PlayerControl.LocalPlayer) Coroutines.Start(Animations.AnimatePlayer(Controller, playerToAnimate, hidePlayer));
                                 else Coroutines.Start(WaitForLocalAnim(Controller, playerToAnimate, hidePlayer));
                                 break;

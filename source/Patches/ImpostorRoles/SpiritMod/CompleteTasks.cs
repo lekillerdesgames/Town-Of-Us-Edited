@@ -45,7 +45,7 @@ namespace TownOfUsEdited.ImpostorRoles.SpiritMod
                 if (__instance == PlayerControl.LocalPlayer)
                 {
                     Coroutines.Start(Utils.FlashCoroutine(Color.green));
-                    var toChooseFromPlayer = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.Is(Faction.Impostors) && !x.Is(Faction.Madmates) && !x.Data.IsDead && !x.Data.Disconnected).ToList();
+                    var toChooseFromPlayer = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.Is(Faction.Impostors) && !x.Is(Faction.Madmates) && !x.Data.IsDead && !x.Data.Disconnected && !x.Is(RoleEnum.Pestilence)).ToList();
                     var rand = UnityEngine.Random.RandomRangeInt(0, toChooseFromPlayer.Count);
                     var pc = toChooseFromPlayer[rand];
                     Utils.MurderPlayer(role.Player, pc, false);

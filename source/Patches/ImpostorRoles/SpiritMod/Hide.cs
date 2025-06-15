@@ -14,7 +14,7 @@ namespace TownOfUsEdited.ImpostorRoles.SpiritMod
             foreach (var role in Role.GetRoles(RoleEnum.Spirit))
             {
                 var spirit = (Spirit) role;
-                if (spirit.Player.Data.Disconnected) return;
+                if (spirit.Player == null || spirit.Player.Data.Disconnected) return;
                 var caught = spirit.Caught;
                 if (!caught)
                 {

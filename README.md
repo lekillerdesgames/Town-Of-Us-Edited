@@ -58,6 +58,7 @@ Join the [Discord](https://discord.gg/Huen5AqR2t) if you need help or want to fi
 # Releases
 | Among Us - Version| Mod Version | Steam Link | Epic Games link |
 |----------|-------------|-----------------|-----------------|
+|  16.0.5 & 16.1.0 | v1.1.4 | [Download for Steam](https://github.com/lekillerdesgames/Town-Of-Us-Edited/releases/download/v1.1.4/Toue.v1.1.4.Steam.zip) | [Download for Epic Games](https://github.com/lekillerdesgames/Town-Of-Us-Edited/releases/download/v1.1.4/Toue.v1.1.4.Epic.zip) |
 |  16.0.5 & 16.1.0 | v1.1.3 | [Download for Steam](https://github.com/lekillerdesgames/Town-Of-Us-Edited/releases/download/v1.1.3/Toue.v1.1.3.Steam.zip) | [Download for Epic Games](https://github.com/lekillerdesgames/Town-Of-Us-Edited/releases/download/v1.1.3/Toue.v1.1.3.Epic.zip) |
 |  16.0.5 & 16.1.0 | v1.1.2 | [Download for Steam](https://github.com/lekillerdesgames/Town-Of-Us-Edited/releases/download/v1.1.2/Toue.v1.1.2.Steam.zip) | [Download for Epic Games](https://github.com/lekillerdesgames/Town-Of-Us-Edited/releases/download/v1.1.2/Toue.v1.1.2.Epic.zip) |
 |  16.0.5 & 16.1.0 | v1.1.1 | [Download for Steam](https://github.com/lekillerdesgames/Town-Of-Us-Edited/releases/download/v1.1.1/Toue.v1.1.1.Steam.zip) | [Download for Epic Games](https://github.com/lekillerdesgames/Town-Of-Us-Edited/releases/download/v1.1.1/Toue.v1.1.1.Epic.zip) |
@@ -2338,6 +2339,9 @@ button used for vanilla role abilities - all impostor abilities like blackmail, 
 LB & RB - either of these will trigger button barry or disperse modifiers <br>
 RT - used for the glitch's hack ability <br>
 LT - used for the glitch's mimic ability
+## Custom Emotes and Animations!
+The mod includes a little menu allowing you to express your emotions in game through emotes.\
+There are also a few animations for some roles like morphling and swooper!
 
 ## And much more!
 

@@ -63,6 +63,16 @@ namespace TownOfUsEdited.Patches.NeutralRoles
             Menu.Close();
         }
 
+        [HarmonyPatch(typeof(ShapeshifterMinigame), nameof(ShapeshifterMinigame.OnDisable))]
+        public static class ClosePatch
+        {
+            public static void Postfix()
+            {
+                if (singleton == null) return;
+                singleton.Menu.DestroyImmediate();
+                singleton = null;
+            }
+        }
 
         [HarmonyPatch(typeof(ShapeshifterMinigame), nameof(ShapeshifterMinigame.Begin))]
         public static class MenuPatch

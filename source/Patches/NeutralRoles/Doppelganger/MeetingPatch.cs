@@ -24,7 +24,8 @@ namespace TownOfUsEdited.NeutraleRoles.DoppelgangerMod
                 {
                     foreach (var state in __instance.playerStates)
                     {
-                        if (player.PlayerId == state.TargetPlayerId)
+                        if (player.PlayerId == state.TargetPlayerId && role.Player != null
+                        && !role.Player.Data.Disconnected)
                         {
                             if (player == role.Player && role.TransformedPlayer != null && !player.Data.IsDead)
                             {
@@ -54,7 +55,8 @@ namespace TownOfUsEdited.NeutraleRoles.DoppelgangerMod
                 foreach (var doppel in Role.GetRoles(RoleEnum.Doppelganger))
                 {
                     var role = Role.GetRole<Doppelganger>(doppel.Player);
-                    if (role.Player.Data.IsDead || role.TransformedPlayer == null) return;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.TransformedPlayer == null) return;
                     UpdateDoppelMeeting(role, MeetingHud.Instance);
                 }
             }
@@ -116,7 +118,8 @@ namespace TownOfUsEdited.NeutraleRoles.DoppelgangerMod
                 foreach (var doppel in Role.GetRoles(RoleEnum.Doppelganger))
                 {
                     var role = Role.GetRole<Doppelganger>(doppel.Player);
-                    if (role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
                     foreach (var player in PlayerControl.AllPlayerControls)
                     {
                         if (player == role.Player && doppelchat)
@@ -145,7 +148,8 @@ namespace TownOfUsEdited.NeutraleRoles.DoppelgangerMod
                 foreach (var doppel in Role.GetRoles(RoleEnum.Doppelganger))
                 {
                     var role = Role.GetRole<Doppelganger>(doppel.Player);
-                    if (role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
                     if (__instance.playerInfo != null && __instance.playerInfo == role.TransformedPlayer.Data)
 		            {
                         __instance.Player.UpdateFromPlayerData(role.TransformedPlayer.Data, PlayerOutfitType.Default, PlayerMaterial.MaskType.ScrollingUI, false, null, true);
@@ -177,7 +181,8 @@ namespace TownOfUsEdited.NeutraleRoles.DoppelgangerMod
                 foreach (var doppel in Role.GetRoles(RoleEnum.Doppelganger))
                 {
                     var role = Role.GetRole<Doppelganger>(doppel.Player);
-                    if (role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
                 }
                 
                 if (sourcePlayer.Is(RoleEnum.Doppelganger))
@@ -199,7 +204,8 @@ namespace TownOfUsEdited.NeutraleRoles.DoppelgangerMod
                 foreach (var doppel in Role.GetRoles(RoleEnum.Doppelganger))
                 {
                     var role = Role.GetRole<Doppelganger>(doppel.Player);
-                    if (role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
                     if (playerInfo == role.TransformedPlayer.Data)
                     {
                         __instance.Background.sprite = ShipStatus.Instance.CosmeticsCache.GetNameplate(playerInfo.DefaultOutfit.NamePlateId).Image;
@@ -226,7 +232,8 @@ namespace TownOfUsEdited.NeutraleRoles.DoppelgangerMod
                 foreach (var doppel in Role.GetRoles(RoleEnum.Doppelganger))
                 {
                     var role = Role.GetRole<Doppelganger>(doppel.Player);
-                    if (role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
                     if (__instance == doppel.Player)
                     {
                         bool flag = target == null;
@@ -262,7 +269,8 @@ namespace TownOfUsEdited.NeutraleRoles.DoppelgangerMod
                 foreach (var doppel in Role.GetRoles(RoleEnum.Doppelganger))
                 {
                     var role = Role.GetRole<Doppelganger>(doppel.Player);
-                    if (role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
                     if (reportInfo == role.TransformedPlayer.Data)
                     {
                         __instance.playerParts.UpdateFromPlayerData(role.TransformedPlayer.Data, PlayerOutfitType.Default, PlayerMaterial.MaskType.None, false, null, true);
@@ -282,7 +290,8 @@ namespace TownOfUsEdited.NeutraleRoles.DoppelgangerMod
                 foreach (var doppel in Role.GetRoles(RoleEnum.Doppelganger))
                 {
                     var role = Role.GetRole<Doppelganger>(doppel.Player);
-                    if (role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.TransformedPlayer == null) return true;
                     if (pData == role.TransformedPlayer.Data)
                     {
                         __instance.UpdateFromPlayerData(role.TransformedPlayer.Data, PlayerOutfitType.Default, PlayerMaterial.MaskType.ComplexUI, false, null, true);
@@ -303,7 +312,8 @@ namespace TownOfUsEdited.NeutraleRoles.DoppelgangerMod
                 foreach (var doppel in Role.GetRoles(RoleEnum.Doppelganger))
                 {
                     var role = Role.GetRole<Doppelganger>(doppel.Player);
-                    if (role.Player.Data.IsDead || role.TransformedPlayer == null) return;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.TransformedPlayer == null) return;
                     if (srcPlayer == role.Player.Data)
                     {
                         srcPlayer = role.TransformedPlayer.Data;

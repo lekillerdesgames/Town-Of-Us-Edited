@@ -21,7 +21,7 @@ namespace TownOfUsEdited.Patches
         {
             public static void ForceAddChat(PlayerControl srcPlayer, string chatText, string Id)
             {
-                var Instance = DestroyableSingleton<ChatController>.Instance;
+                var Instance = HudManager.Instance.Chat;
                 ChatBubble pooledBubble = Instance.GetPooledBubble();
                 try
 		        {

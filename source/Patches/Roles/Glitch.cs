@@ -321,6 +321,7 @@ namespace TownOfUsEdited.Roles
             {
                 var abilityUsed = Utils.AbilityUsed(PlayerControl.LocalPlayer);
                 if (!abilityUsed) yield break;
+                if (mimicPlayer == null || mimicPlayer.Data.Disconnected) yield break;
 
                 Utils.Rpc(CustomRPC.SetMimic, PlayerControl.LocalPlayer.PlayerId, mimicPlayer.PlayerId);
                 Utils.Morph(__instance.Player, mimicPlayer, playAnim: true);

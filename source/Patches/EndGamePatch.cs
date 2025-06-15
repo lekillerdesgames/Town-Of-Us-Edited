@@ -8,7 +8,6 @@ using TownOfUsEdited.Roles;
 using AmongUs.GameOptions;
 using TownOfUsEdited.CrewmateRoles.MedicMod;
 using Reactor.Utilities;
-using TownOfUsEdited.Patches.ImpostorRoles;
 
 namespace TownOfUsEdited.Patches {
 
@@ -41,11 +40,6 @@ namespace TownOfUsEdited.Patches {
         public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] EndGameResult endGameResult)
         {
             if (AmongUsClient.Instance.AmHost && CustomGameOptions.AutoRejoin) Coroutines.Start(HostManager.AutoRejoin());
-            if (ImpostorChat.ImpostorChatButton)
-            {
-                Object.Destroy(ImpostorChat.ImpostorChatButton.gameObject);
-                Object.Destroy(ImpostorChat.Background.gameObject);
-            }
             AdditionalTempData.clear();
             var playerRole = "";
             // Had to add this to avoid death reasons appearing two times
@@ -53,6 +47,7 @@ namespace TownOfUsEdited.Patches {
             // Theres a better way of doing this e.g. switch statement or dictionary. But this works for now.
             foreach (var playerControl in PlayerControl.AllPlayerControls)
             {
+                if (playerControl == null || playerControl.Data.Disconnected) continue;
                 playerRole = "";
                 hasDeathReason = false;
                 foreach (var role in Role.RoleHistory.Where(x => x.Key == playerControl.PlayerId))

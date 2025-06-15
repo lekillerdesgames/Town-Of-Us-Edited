@@ -628,7 +628,7 @@ namespace TownOfUsEdited
                 player.Is(RoleEnum.Sheriff) || player.Is(RoleEnum.Bodyguard) ||
                 player.Is(RoleEnum.Avenger) || player.Is(RoleEnum.Fighter) || player.Is(RoleEnum.Crusader) ||
                 player.Is(RoleEnum.VampireHunter) || player.Is(RoleEnum.Knight) || player.Is(ModifierEnum.Vengeful) ||
-                player.Is(RoleEnum.Imitator) || player.Is(RoleEnum.TimeLord)) return true;
+                player.Is(RoleEnum.TimeLord)) return true;
             else if (player.Is(RoleEnum.Hunter))
             {
                 var hunter = Role.GetRole<Hunter>(player);
@@ -638,7 +638,7 @@ namespace TownOfUsEdited
             else if (player.Is(RoleEnum.Imitator))
             {
                 if (PlayerControl.AllPlayerControls.ToArray().Count(x => x.Data.IsDead && !x.Data.Disconnected &&
-                (x.Is(RoleEnum.Hunter) || x.Is(RoleEnum.Sheriff) || x.Is(RoleEnum.Veteran))) > 0) return true;
+                x.IsCrewKiller()) > 0) return true;
             }
             else if (player.Is(RoleEnum.Jailor))
             {
@@ -1948,6 +1948,8 @@ namespace TownOfUsEdited
                     RoleManager.Instance.SetRole(target, RoleTypes.CrewmateGhost);
                     if (target == PlayerControl.LocalPlayer) Utils.ShowDeadBodies = true;
                 }
+
+                PlayerControl_Die.Postfix();
 
                 if (!killer.AmOwner) return;
 

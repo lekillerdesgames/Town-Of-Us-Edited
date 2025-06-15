@@ -1,4 +1,5 @@
-﻿using AmongUs.Data.Player;
+﻿using System.Linq;
+using AmongUs.Data.Player;
 using HarmonyLib;
 using TownOfUsEdited.Roles;
 
@@ -42,6 +43,7 @@ namespace TownOfUsEdited.NeutralRoles.InfectiousMod
             if (role == null) return;
             if (role.InfectionState == 0) return;
             if (PlayerControl.LocalPlayer.Is(RoleEnum.Infectious)) return;
+            if (Role.GetRoles(RoleEnum.Infectious).ToArray().ToList().Count <= 0) return;
             if (role.InfectionState == 1)
             {
                 DestroyableSingleton<HudManager>.Instance.Chat.AddChat(PlayerControl.LocalPlayer, "You have been Infected by an <color=#bf9000>Infectious</color> and entered the stage 1 of the infection.\nEject the Infectious before it's too late!");

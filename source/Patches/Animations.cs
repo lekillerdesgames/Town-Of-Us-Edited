@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Linq;
-using System.Numerics;
 using HarmonyLib;
 using Reactor.Utilities;
 using Reactor.Utilities.Extensions;
@@ -96,6 +95,17 @@ namespace TownOfUsEdited.Patches
                 Menu.Close();
             }
 
+            [HarmonyPatch(typeof(ShapeshifterMinigame), nameof(ShapeshifterMinigame.OnDisable))]
+            public static class ClosePatch
+            {
+                public static void Postfix()
+                {
+                    if (singleton == null) return;
+                    singleton.Menu.DestroyImmediate();
+                    singleton = null;
+                }
+            }
+
             [HarmonyPatch(typeof(ShapeshifterMinigame), nameof(ShapeshifterMinigame.Begin))]
             public static class MenuPatch
             {
@@ -106,9 +116,22 @@ namespace TownOfUsEdited.Patches
                     if (menu == null)
                         return true;
 
+                    var panels = Object.FindObjectsOfType<ShapeshifterPanel>();
+
+                    if (panels.Count > 0)
+                    {
+                        foreach (var panel in panels)
+                        {
+                            if (panel != null)
+                            {
+                                panel.gameObject.DestroyImmediate();
+                            }
+                        }
+                    }
+
                     __instance.potentialVictims = new();
                     var list2 = new Il2CppSystem.Collections.Generic.List<UiElement>();
-                    List<string> Animations = new List<string> { "Bean Dance", "Wave" };
+                    List<string> Animations = new List<string> { "Bean Dance", "Wave", "Roll", "Sleepy" };
 
                     for (var i = 0; i < Animations.Count; i++)
                     {
@@ -156,6 +179,8 @@ namespace TownOfUsEdited.Patches
                 string anim = "None";
                 bool hidePlayer = true;
                 if (controller == boingController) anim = "Bean Dance";
+                else if (controller == rollController) anim = "Roll";
+                else if (controller == sleepyController) anim = "Sleepy";
                 else if (controller == waveController)
                 {
                     anim = "Wave";
@@ -166,10 +191,14 @@ namespace TownOfUsEdited.Patches
         }
         public static RuntimeAnimatorController boingController;
         public static RuntimeAnimatorController waveController;
+        public static RuntimeAnimatorController rollController;
+        public static RuntimeAnimatorController sleepyController;
         public static IEnumerator AnimatePlayer(RuntimeAnimatorController controller, PlayerControl player, bool hidePlayer = true)
         {
             if (boingController == null) boingController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "Boing_0.controller");
+            if (sleepyController == null) sleepyController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "sleepy_0.controller");
             if (waveController == null) waveController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "wave_0.controller");
+            if (rollController == null) rollController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "roll_0.controller");
             if (GameObject.Find($"Animation Object {player.PlayerId}")) StopAllAnimations(player); // Already animating
             GameObject _object = new GameObject($"Animation Object {player.PlayerId}");
             if (hidePlayer)
@@ -180,6 +209,7 @@ namespace TownOfUsEdited.Patches
             player.NetTransform.Halt();
             Vector2 scale = new Vector2(0.6f, 0.6f);
             if (controller == waveController) scale = new Vector2(0.7f, 0.7f);
+            else if (controller == sleepyController) scale = new Vector2(0.4f, 0.4f);
             _object.transform.localScale *= scale;
             _object.gameObject.AddComponent<SpriteRenderer>().material = new Material(Shader.Find("Unlit/PlayerShader"));
             PlayerMaterial.SetColors(player.Data.DefaultOutfit.ColorId, _object.gameObject.GetComponent<SpriteRenderer>());
@@ -220,7 +250,7 @@ namespace TownOfUsEdited.Patches
             if (GameObject.Find($"Animation Object {player.PlayerId}")) // Already animating
             {
                 var usedController = GameObject.Find($"Animation Object {player.PlayerId}").GetComponent<Animator>().runtimeAnimatorController;
-                bool playerHidden = usedController == boingController;
+                bool playerHidden = usedController == boingController || usedController == rollController || sleepyController;
                 if (playerHidden)
                 {
                     player.cosmetics.currentBodySprite.Visible = true;
@@ -237,7 +267,9 @@ namespace TownOfUsEdited.Patches
             public static void Postfix(HudManager __instance)
             {
                 if (boingController == null) boingController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "Boing_0.controller");
+                if (sleepyController == null) sleepyController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "sleepy_0.controller");
                 if (waveController == null) waveController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "wave_0.controller");
+                if (rollController == null) rollController = AssetLoader.LoadController(AssetLoader.bundles.FirstOrDefault(x => x.Key == "touebundle").Value, "roll_0.controller");
                 if (!PlayerControl.LocalPlayer)
                 {
                     if (AnimationButton != null) AnimationButton.gameObject.DestroyImmediate();
@@ -258,22 +290,19 @@ namespace TownOfUsEdited.Patches
                 }
                 else
                 {
-                    hasCustomChat = ((PlayerControl.LocalPlayer.Is(RoleEnum.Vampire) && VampireChat.VampireChatButton != null) ||
-                    (PlayerControl.LocalPlayer.Is(RoleEnum.SerialKiller) && SerialKillerChat.SerialKillerChatButton != null) ||
-                    (PlayerControl.LocalPlayer.Is(Faction.Coven) && CovenChat.CovenChatButton != null) ||
-                    (PlayerControl.LocalPlayer.Is(Faction.Impostors) && ImpostorChat.ImpostorChatButton != null))
+                    hasCustomChat = ((PlayerControl.LocalPlayer.Is(RoleEnum.Vampire) && VampireChat.VampireChatButton != null && VampireChat.VampireChatButton.isActiveAndEnabled) ||
+                    (PlayerControl.LocalPlayer.Is(RoleEnum.SerialKiller) && SerialKillerChat.SerialKillerChatButton != null && SerialKillerChat.SerialKillerChatButton.isActiveAndEnabled) ||
+                    (PlayerControl.LocalPlayer.Is(Faction.Coven) && CovenChat.CovenChatButton != null && CovenChat.CovenChatButton.isActiveAndEnabled) ||
+                    (PlayerControl.LocalPlayer.Is(Faction.Impostors) && ImpostorChat.ImpostorChatButton != null && ImpostorChat.ImpostorChatButton.isActiveAndEnabled))
                     && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay;
-                    hasLoverChat = PlayerControl.LocalPlayer.IsLover() && LoversChat.LoversChatButton != null
+                    hasLoverChat = PlayerControl.LocalPlayer.IsLover() && LoversChat.LoversChatButton != null && LoversChat.LoversChatButton.isActiveAndEnabled
                     && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay;
                 }
                 Vector3 Pos;
-                if ((hasCustomChat && !hasLoverChat) || (hasLoverChat && !hasCustomChat) || HudManager.Instance.Chat.isActiveAndEnabled)
-                {
-                    if (!LobbyBehaviour.Instance) Pos = new Vector3(2.7633f, 2.52f, -40f);
-                    else Pos = new Vector3(2.6033f, 2.52f, -40f);
-                }
-                else if ((hasCustomChat || HudManager.Instance.Chat.isActiveAndEnabled) && hasLoverChat) Pos = new Vector3(1.7733f, 2.52f, -40f);
-                else Pos = new Vector3(3.2033f, 2.52f, -40f);
+                var chatPos = HudManager.Instance.Chat.chatButton.transform.localPosition;
+                if ((hasCustomChat && !hasLoverChat) || (hasLoverChat && !hasCustomChat) || HudManager.Instance.Chat.isActiveAndEnabled) Pos = new Vector3(chatPos.x - 0.9f, chatPos.y + 0.18f, chatPos.z);
+                else if ((hasCustomChat || HudManager.Instance.Chat.isActiveAndEnabled) && hasLoverChat) Pos = new Vector3(chatPos.x - 1.75f, chatPos.y + 0.18f, chatPos.z);
+                else Pos = new Vector3(chatPos.x - 0.31f, chatPos.y + 0.18f, chatPos.z);
                 AnimationButton.transform.Find("Inactive").GetComponent<SpriteRenderer>().sprite = TownOfUsEdited.AnimationButton;
                 AnimationButton.transform.Find("Active").GetComponent<SpriteRenderer>().sprite = TownOfUsEdited.AnimationButtonActive;
                 AnimationButton.transform.Find("Active").GetComponent<SpriteRenderer>().material = new Material(Shader.Find("Unlit/PlayerShader"));
@@ -281,7 +310,7 @@ namespace TownOfUsEdited.Patches
                 AnimationButton.transform.Find("Inactive").GetComponent<SpriteRenderer>().material = new Material(Shader.Find("Unlit/PlayerShader"));
                 PlayerMaterial.SetColors(PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId, AnimationButton.transform.Find("Inactive").GetComponent<SpriteRenderer>());
                 AnimationButton.SetActive(PlayerControl.LocalPlayer && !MeetingHud.Instance && !PlayerControl.LocalPlayer.Data.IsDead
-                && PlayerControl.LocalPlayer.CanMove);
+                && PlayerControl.LocalPlayer.CanMove && !HudManager.Instance.IsIntroDisplayed);
                 AnimationButton.transform.Find("Background").localPosition = Vector3.zero;
                 AnimationButton.transform.localPosition = Pos;
             }
@@ -293,6 +322,8 @@ namespace TownOfUsEdited.Patches
                     RuntimeAnimatorController Controller = null;
                     bool hidePlayer = true;
                     if (x == "Bean Dance") Controller = boingController;
+                    else if (x == "Roll") Controller = rollController;
+                    else if (x == "Sleepy") Controller = sleepyController;
                     else if (x == "Wave")
                     {
                         Controller = waveController;

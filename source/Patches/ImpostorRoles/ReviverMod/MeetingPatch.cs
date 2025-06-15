@@ -24,7 +24,8 @@ namespace TownOfUsEdited.ImpostorRoles.ReviverMod
                 {
                     foreach (var state in __instance.playerStates)
                     {
-                        if (player.PlayerId == state.TargetPlayerId)
+                        if (player.PlayerId == state.TargetPlayerId && role.Player != null
+                        && !role.Player.Data.Disconnected)
                         {
                             if (player == role.Player && role.UsedRevive && !player.Data.IsDead)
                             {
@@ -54,7 +55,8 @@ namespace TownOfUsEdited.ImpostorRoles.ReviverMod
                 foreach (var reviver in Role.GetRoles(RoleEnum.Reviver))
                 {
                     var role = Role.GetRole<Reviver>(reviver.Player);
-                    if (role.Player.Data.IsDead || role.UsedRevive == false) return;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.UsedRevive == false) return;
                     UpdateMeeting(role, MeetingHud.Instance);
                 }
             }
@@ -124,7 +126,8 @@ namespace TownOfUsEdited.ImpostorRoles.ReviverMod
                 foreach (var reviver in Role.GetRoles(RoleEnum.Reviver))
                 {
                     var role = Role.GetRole<Reviver>(reviver.Player);
-                    if (role.Player.Data.IsDead || role.UsedRevive == false) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.UsedRevive == false) return true;
                     foreach (var player in PlayerControl.AllPlayerControls)
                     {
                         if (player == role.Player && reviverchat)
@@ -153,7 +156,8 @@ namespace TownOfUsEdited.ImpostorRoles.ReviverMod
                 foreach (var reviver in Role.GetRoles(RoleEnum.Reviver))
                 {
                     var role = Role.GetRole<Reviver>(reviver.Player);
-                    if (role.Player.Data.IsDead || role.UsedRevive == false) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.UsedRevive == false) return true;
                     if (__instance.playerInfo != null && __instance.playerInfo == role.RevivedPlayer.Data)
 		            {
                         __instance.Player.UpdateFromPlayerData(role.RevivedPlayer.Data, PlayerOutfitType.Default, PlayerMaterial.MaskType.ScrollingUI, false, null, true);
@@ -185,7 +189,8 @@ namespace TownOfUsEdited.ImpostorRoles.ReviverMod
                 foreach (var reviver in Role.GetRoles(RoleEnum.Reviver))
                 {
                     var role = Role.GetRole<Reviver>(reviver.Player);
-                    if (role.Player.Data.IsDead || role.UsedRevive == false) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.UsedRevive == false) return true;
                 }
                 
                 if (sourcePlayer.Is(RoleEnum.Reviver))
@@ -207,7 +212,8 @@ namespace TownOfUsEdited.ImpostorRoles.ReviverMod
                 foreach (var reviver in Role.GetRoles(RoleEnum.Reviver))
                 {
                     var role = Role.GetRole<Reviver>(reviver.Player);
-                    if (role.Player.Data.IsDead || role.UsedRevive == false) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.UsedRevive == false) return true;
                     if (playerInfo == role.RevivedPlayer.Data)
                     {
                         __instance.Background.sprite = ShipStatus.Instance.CosmeticsCache.GetNameplate(playerInfo.DefaultOutfit.NamePlateId).Image;
@@ -234,7 +240,8 @@ namespace TownOfUsEdited.ImpostorRoles.ReviverMod
                 foreach (var reviver in Role.GetRoles(RoleEnum.Reviver))
                 {
                     var role = Role.GetRole<Reviver>(reviver.Player);
-                    if (role.Player.Data.IsDead || role.UsedRevive == false) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.UsedRevive == false) return true;
                     if (__instance == reviver.Player)
                     {
                         bool flag = target == null;
@@ -268,7 +275,8 @@ namespace TownOfUsEdited.ImpostorRoles.ReviverMod
                 foreach (var reviver in Role.GetRoles(RoleEnum.Reviver))
                 {
                     var role = Role.GetRole<Reviver>(reviver.Player);
-                    if (role.Player.Data.IsDead || role.UsedRevive == false) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.UsedRevive == false) return true;
                     if (reportInfo == role.RevivedPlayer.Data)
                     {
                         __instance.playerParts.UpdateFromPlayerData(role.RevivedPlayer.Data, PlayerOutfitType.Default, PlayerMaterial.MaskType.None, false, null, true);
@@ -288,7 +296,8 @@ namespace TownOfUsEdited.ImpostorRoles.ReviverMod
                 foreach (var reviver in Role.GetRoles(RoleEnum.Reviver))
                 {
                     var role = Role.GetRole<Reviver>(reviver.Player);
-                    if (role.Player.Data.IsDead || role.UsedRevive == false) return true;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || role.UsedRevive == false) return true;
                     if (pData == role.RevivedPlayer.Data)
                     {
                         __instance.UpdateFromPlayerData(role.RevivedPlayer.Data, PlayerOutfitType.Default, PlayerMaterial.MaskType.ComplexUI, false, null, true);
@@ -309,7 +318,8 @@ namespace TownOfUsEdited.ImpostorRoles.ReviverMod
                 foreach (var reviver in Role.GetRoles(RoleEnum.Reviver))
                 {
                     var role = Role.GetRole<Reviver>(reviver.Player);
-                    if (role.Player.Data.IsDead || !role.UsedRevive) return;
+                    if (role == null || role.Player == null || role.Player.Data.Disconnected ||
+                    role.Player.Data.IsDead || !role.UsedRevive) return;
                     if (srcPlayer == role.Player.Data)
                     {
                         srcPlayer = role.RevivedPlayer.Data;
