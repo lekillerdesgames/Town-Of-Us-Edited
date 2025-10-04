@@ -1403,9 +1403,9 @@ namespace TownOfUsEdited.CustomOption
             Guardian =
                 new CustomHeaderOption(num++, MultiMenu.crewmate, "<color=#7cb6c2>Guardian</color>");
             GuardCooldown =
-                new CustomNumberOption(num++, MultiMenu.crewmate, "Guard Cooldown", 25f, 10f, 60f, 2.5f, CooldownFormat);
+                new CustomNumberOption(num++, MultiMenu.crewmate, "Guardian Guard Cooldown", 25f, 10f, 60f, 2.5f, CooldownFormat);
             GuardDuration =
-                new CustomNumberOption(num++, MultiMenu.crewmate, "Guard Duration", 10f, 10f, 30f, 2.5f, CooldownFormat);
+                new CustomNumberOption(num++, MultiMenu.crewmate, "Guardian Guard Duration", 10f, 10f, 30f, 2.5f, CooldownFormat);
 
             Haunter =
                 new CustomHeaderOption(num++, MultiMenu.crewmate, "<color=#d3d3d3FF>Haunter</color>");
@@ -1419,9 +1419,9 @@ namespace TownOfUsEdited.CustomOption
             Helper =
                 new CustomHeaderOption(num++, MultiMenu.crewmate, "<color=#7cb6c2>Helper</color>");
             HelperCooldown =
-                new CustomNumberOption(num++, MultiMenu.crewmate, "Alert Cooldown", 25f, 10f, 60f, 2.5f, CooldownFormat);
+                new CustomNumberOption(num++, MultiMenu.crewmate, "Helper Alert Cooldown", 25f, 10f, 60f, 2.5f, CooldownFormat);
             HelperDuration =
-                new CustomNumberOption(num++, MultiMenu.crewmate, "Alert Duration", 10f, 5f, 15f, 1f, CooldownFormat);
+                new CustomNumberOption(num++, MultiMenu.crewmate, "Helper Alert Duration", 10f, 5f, 15f, 1f, CooldownFormat);
             HelperSpeed = new CustomNumberOption(num++, MultiMenu.crewmate, "Player Speed On Alert", 1.25f, 1.05f, 2.5f, 0.05f, MultiplierFormat);
 
             Astral =
@@ -1452,9 +1452,9 @@ namespace TownOfUsEdited.CustomOption
             Chameleon =
                 new CustomHeaderOption(num++, MultiMenu.crewmate, "<color=#068c38>Chameleon</color>");
             ChamSwoopCooldown =
-                new CustomNumberOption(num++, MultiMenu.crewmate, "Swoop Cooldown", 25f, 10f, 60f, 2.5f, CooldownFormat);
+                new CustomNumberOption(num++, MultiMenu.crewmate, "Chameleon Swoop Cooldown", 25f, 10f, 60f, 2.5f, CooldownFormat);
             ChamSwoopDuration =
-                new CustomNumberOption(num++, MultiMenu.crewmate, "Swoop Duration", 10f, 5f, 15f, 1f, CooldownFormat);
+                new CustomNumberOption(num++, MultiMenu.crewmate, "Chameleon Swoop Duration", 10f, 5f, 15f, 1f, CooldownFormat);
 
             Detective =
                 new CustomHeaderOption(num++, MultiMenu.crewmate, "<color=#4D4DFFFF>Detective</color>");

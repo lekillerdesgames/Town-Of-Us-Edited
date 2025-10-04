@@ -5,7 +5,7 @@ using TownOfUsEdited.CrewmateRoles.MedicMod;
 
 namespace TownOfUsEdited.CrewmateRoles.DetectiveMod
 {
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdReportDeadBody))]
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
     internal class BodyReportPatch
     {
         private static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] NetworkedPlayerInfo info)
@@ -20,15 +20,14 @@ namespace TownOfUsEdited.CrewmateRoles.DetectiveMod
             if (killer == null)
                 return;
 
-            var isDetectiveAlive = __instance.Is(RoleEnum.Detective);
-            var areReportsEnabled = CustomGameOptions.DetectiveReportOn;
-
-            if (!isDetectiveAlive || !areReportsEnabled)
-                return;
+            if (__instance != PlayerControl.LocalPlayer) return;
 
             var isUserDetective = PlayerControl.LocalPlayer.Is(RoleEnum.Detective);
-            if (!isUserDetective)
+            var areReportsEnabled = CustomGameOptions.DetectiveReportOn;
+
+            if (!isUserDetective || !areReportsEnabled)
                 return;
+
             var br = new BodyReport
             {
                 Killer = Utils.PlayerById(killer.KillerId),

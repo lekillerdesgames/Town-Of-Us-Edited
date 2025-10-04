@@ -150,7 +150,7 @@ namespace TownOfUsEdited.Patches.ImpostorRoles.ManipulatorMod
         public static Vector2 manipVector = Vector2.zero;
 
         [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]
-        public class InfectedPlayerKeyboardUpdate
+        public class ManipulatedPlayerKeyboardUpdate
         {
             public static bool Prefix(KeyboardJoystick __instance)
             {

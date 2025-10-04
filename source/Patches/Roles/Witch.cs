@@ -12,7 +12,7 @@ namespace TownOfUsEdited.Roles
         {
             Name = "Witch";
             ImpostorText = () => "Cast Spells On Players";
-            TaskText = () => "Cast spells on <color=#00FFFF>Crewmates</color> to sneakily kill them!\nFake Tasks:";
+            TaskText = () => "Cast spells on <color=#00FFFF>Crewmates</color> to kill them after the next meeting\nFake Tasks:";
             Color = Patches.Colors.Impostor;
             RoleType = RoleEnum.Witch;
             AddToRoleHistory(RoleType);

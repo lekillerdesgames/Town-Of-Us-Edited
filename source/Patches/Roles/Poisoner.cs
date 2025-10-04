@@ -71,7 +71,8 @@ namespace TownOfUsEdited.Roles
             else Cooldown = CustomGameOptions.PoisonCD;
 
             // Kill Check
-            if (!PoisonedPlayer.Is(RoleEnum.Pestilence) && !PoisonedPlayer.IsOnAlert() && !Player.IsJailed())
+            if (!PoisonedPlayer.Is(RoleEnum.Pestilence) && !PoisonedPlayer.IsOnAlert() && !Player.IsJailed()
+            && !PoisonedPlayer.HasPotionShield() && !PoisonedPlayer.IsProtected() || !PoisonedPlayer.IsBarriered() || !PoisonedPlayer.IsGuarded2())
             {
                 Utils.Rpc(CustomRPC.PoisonKill, PlayerControl.LocalPlayer.PlayerId, true); // Successed Kill
                 Utils.MurderPlayer(Player, PoisonedPlayer, false);

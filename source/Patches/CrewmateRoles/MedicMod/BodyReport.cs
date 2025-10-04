@@ -4,7 +4,7 @@ using HarmonyLib;
 
 namespace TownOfUsEdited.CrewmateRoles.MedicMod
 {
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdReportDeadBody))]
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
     internal class BodyReportPatch
     {
         private static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] NetworkedPlayerInfo info)
@@ -22,15 +22,15 @@ namespace TownOfUsEdited.CrewmateRoles.MedicMod
                 //System.Console.WriteLine("RBTWOOF");
                 return;
 
-            var isMedicAlive = __instance.Is(RoleEnum.Medic);
-            var areReportsEnabled = CustomGameOptions.ShowReports;
-
-            if (!isMedicAlive || !areReportsEnabled)
-                return;
+            if (__instance != PlayerControl.LocalPlayer) return;
+            if (PlayerControl.LocalPlayer.Data.IsDead) return;
 
             var isUserMedic = PlayerControl.LocalPlayer.Is(RoleEnum.Medic);
-            if (!isUserMedic)
+            var areReportsEnabled = CustomGameOptions.ShowReports;
+
+            if (!isUserMedic || !areReportsEnabled)
                 return;
+
             //System.Console.WriteLine("RBTHREEF");
             var br = new BodyReport
             {

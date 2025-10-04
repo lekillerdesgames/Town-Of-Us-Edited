@@ -348,8 +348,8 @@ namespace TownOfUsEdited.Patches
                             isRandom = true;
                             sourcePlayer.SetName(GetRandomName());
 			                sourcePlayer.SetColor((int)UnityEngine.Random.Range(0, Palette.PlayerColors.Length));
-                            sourcePlayer.CmdCheckName(sourcePlayer.GetDefaultOutfit().PlayerName);
-			                sourcePlayer.CmdCheckColor((byte)sourcePlayer.GetDefaultOutfit().ColorId);
+                            sourcePlayer.CmdCheckName(sourcePlayer.CurrentOutfit.PlayerName);
+			                sourcePlayer.CmdCheckColor((byte)sourcePlayer.CurrentOutfit.ColorId);
 			                sourcePlayer.RpcSetPet(HatManager.Instance.allPets[UnityEngine.Random.Range(0, HatManager.Instance.allPets.Count)].ProdId);
 			                sourcePlayer.RpcSetHat(HatManager.Instance.allHats[UnityEngine.Random.Range(0, HatManager.Instance.allHats.Count)].ProdId);
 			                sourcePlayer.RpcSetSkin(HatManager.Instance.allSkins[UnityEngine.Random.Range(0, HatManager.Instance.allSkins.Count)].ProdId);

@@ -66,6 +66,7 @@ namespace TownOfUsEdited.CrewmateRoles.TimeLordMod
             }
 
             public static bool Waiting = false;
+            public static bool WaitForAnimationToFinish = false;
             private static bool IsPlayingVentAnimation()
             {
                 return PlayerControl.LocalPlayer.MyPhysics.Animations.IsPlayingEnterVentAnimation() || PlayerControl.LocalPlayer.walkingToVent; // Took it from CustomNetworkTransform
@@ -77,6 +78,20 @@ namespace TownOfUsEdited.CrewmateRoles.TimeLordMod
                 if (PlayerControl.LocalPlayer.Data == null) return;
                 if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started
                 && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) return;
+                bool usingSpecialAnimation = PlayerControl.LocalPlayer.onLadder || PlayerControl.LocalPlayer.inMovingPlat ||
+                PlayerControl.LocalPlayer.NetTransform.IsInMiddleOfAnimationThatMakesPlayerInvisible();
+                if (WaitForAnimationToFinish && usingSpecialAnimation)
+                {
+                    return;
+                }
+                else if (WaitForAnimationToFinish && !usingSpecialAnimation)
+                {
+                    PlayerControl.LocalPlayer.NetTransform.Halt();
+                    PlayerControl.LocalPlayer.moveable = false;
+                    WaitForAnimationToFinish = false;
+                    return;
+                }
+
                 if (PlayerControl.LocalPlayer.Data.IsDead && !isDead && (!PlayerControl.LocalPlayer.Is(RoleEnum.Astral) || !Role.GetRole<Astral>(PlayerControl.LocalPlayer).Enabled))
                 {
                     isDead = true;
@@ -272,7 +287,7 @@ namespace TownOfUsEdited.CrewmateRoles.TimeLordMod
                 if (PlayerControl.LocalPlayer == null) return;
                 if (PlayerControl.LocalPlayer.Data == null) return;
                 string usingSpecialAnimation = "None";
-                if (PlayerControl.LocalPlayer.MyPhysics.myPlayer.onLadder)
+                if (PlayerControl.LocalPlayer.onLadder)
                 {
                     usingSpecialAnimation = "Ladder";
                 }

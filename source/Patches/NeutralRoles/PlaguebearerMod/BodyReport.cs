@@ -3,7 +3,7 @@ using TownOfUsEdited.Roles;
 
 namespace TownOfUsEdited.NeutralRoles.PlaguebearerMod
 {
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdReportDeadBody))]
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
     public class BodyReport
     {
         private static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] NetworkedPlayerInfo info)
@@ -11,6 +11,7 @@ namespace TownOfUsEdited.NeutralRoles.PlaguebearerMod
             if (PlayerControl.AllPlayerControls.Count <= 1) return;
             if (PlayerControl.LocalPlayer == null) return;
             if (PlayerControl.LocalPlayer.Data == null) return;
+            if (PlayerControl.LocalPlayer != __instance) return;
             if (info == null) return;
 
             foreach (var player in PlayerControl.AllPlayerControls)

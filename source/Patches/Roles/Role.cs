@@ -28,7 +28,6 @@ namespace TownOfUsEdited.Roles
         public static bool CovenWins;
         public static bool ImpostorWins;
         public static bool CrewmateWins;
-        public static bool SeeRoles { get; set; } = false;
 
         public List<KillButton> ExtraButtons = new List<KillButton>();
         public List<TextMeshPro> ButtonLabels = new List<TextMeshPro>();
@@ -190,7 +189,7 @@ namespace TownOfUsEdited.Roles
 
         internal virtual bool RoleCriteria()
         {
-            return PlayerControl.LocalPlayer.Is(ModifierEnum.Sleuth) && Modifier.GetModifier<Sleuth>(PlayerControl.LocalPlayer).Reported.Contains(Player.PlayerId) || SeeRoles == true || (Player.Data.IsDead && CustomGameOptions.GameMode == GameMode.Werewolf);
+            return PlayerControl.LocalPlayer.Is(ModifierEnum.Sleuth) && Modifier.GetModifier<Sleuth>(PlayerControl.LocalPlayer).Reported.Contains(Player.PlayerId) || (Player.Data.IsDead && CustomGameOptions.GameMode == GameMode.Werewolf);
         }
         internal virtual bool GuardianAngelCriteria()
         {
@@ -1591,7 +1590,7 @@ namespace TownOfUsEdited.Roles
         }
         public static AudioClip GetIntroSound(RoleTypes roleType)
         {
-            return RoleManager.Instance.AllRoles.Where((role) => role.Role == roleType).FirstOrDefault().IntroSound;
+            return RoleManager.Instance.AllRoles.ToArray().Where((role) => role.Role == roleType).FirstOrDefault().IntroSound;
         }
     }
 }

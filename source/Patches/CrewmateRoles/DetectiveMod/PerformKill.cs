@@ -30,6 +30,7 @@ namespace TownOfUsEdited.CrewmateRoles.DetectiveMod
                 var interact = Utils.Interact(PlayerControl.LocalPlayer, role.ClosestPlayer);
                 if (interact[4] == true)
                 {
+                    role.Cooldown = CustomGameOptions.ExamineCd;
                     if (role.InvestigatedPlayers.Contains(role.ClosestPlayer.PlayerId))
                     {
                         Coroutines.Start(Utils.FlashCoroutine(Color.red));
@@ -41,13 +42,12 @@ namespace TownOfUsEdited.CrewmateRoles.DetectiveMod
                 }
                 if (interact[0] == true)
                 {
-                    role.LastExamined = DateTime.UtcNow;
+                    role.Cooldown = CustomGameOptions.ExamineCd;
                     return false;
                 }
                 else if (interact[1] == true)
                 {
-                    role.LastExamined = DateTime.UtcNow;
-                    role.LastExamined = role.LastExamined.AddSeconds(CustomGameOptions.TempSaveCdReset - CustomGameOptions.ExamineCd);
+                    role.Cooldown = CustomGameOptions.TempSaveCdReset;
                     return false;
                 }
                 else if (interact[3] == true) return false;

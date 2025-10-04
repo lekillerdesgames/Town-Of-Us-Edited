@@ -21,7 +21,8 @@ namespace TownOfUsEdited.ImpostorRoles.AstralMod
                     if (role.Enabled)
                     {
                         role.TimeRemaining = 0f;
-                        role.TurnBack(role.Player);
+                        role.Revive(role.Player);
+                        role.ResetCD();
                         UsedGhost = true;
                     }
                     return;

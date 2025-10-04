@@ -9,7 +9,6 @@ namespace TownOfUsEdited.Roles
     {
         private KillButton _examineButton;
         public PlayerControl ClosestPlayer;
-        public DateTime LastExamined { get; set; }
         public CrimeScene CurrentTarget;
         public CrimeScene InvestigatingScene;
         public List<byte> InvestigatedPlayers = new List<byte>();
@@ -23,7 +22,7 @@ namespace TownOfUsEdited.Roles
             ImpostorText = () => "Inspect Crime Scenes To Catch The Killer";
             TaskText = () => "Inspect crime scenes, then examine players for clues";
             Color = Patches.Colors.Detective;
-            LastExamined = DateTime.UtcNow;
+            Cooldown = CustomGameOptions.ExamineCd;
             RoleType = RoleEnum.Detective;
             Alignment = Alignment.CrewmateInvestigative;
             Cooldown = CustomGameOptions.ExamineCd;

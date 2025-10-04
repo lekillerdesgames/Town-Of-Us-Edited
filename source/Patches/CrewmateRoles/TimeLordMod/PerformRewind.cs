@@ -51,15 +51,25 @@ namespace TownOfUsEdited.CrewmateRoles.TimeLordMod
                 catch
                 {
                 }
-            PlayerControl.LocalPlayer.NetTransform.Halt();
-            PlayerControl.LocalPlayer.moveable = false;
+            bool usingSpecialAnimation = PlayerControl.LocalPlayer.onLadder || PlayerControl.LocalPlayer.inMovingPlat ||
+            PlayerControl.LocalPlayer.NetTransform.IsInMiddleOfAnimationThatMakesPlayerInvisible();
+            if (!usingSpecialAnimation)
+            {
+                PlayerControl.LocalPlayer.NetTransform.Halt();
+                PlayerControl.LocalPlayer.moveable = false;
+            }
+            else
+            {
+                TimeLordPatches.HudManagerUpdate.WaitForAnimationToFinish = true;
+            }
             foreach (var astrals in Role.GetRoles(RoleEnum.Astral))
             {
                 var astral = (Astral)astrals;
                 if (astral.Enabled)
                 {
                     astral.TimeRemaining = 0f;
-                    astral.TurnBack(astral.Player);
+                    astral.Revive(astral.Player);
+                    astral.ResetCD();
                 }
             }
         }

@@ -82,7 +82,7 @@ namespace TownOfUsEdited.Roles
                     deadBody.gameObject.Destroy();
                 }
             }
-            DeadBody deadBody2 = Object.Instantiate<DeadBody>(GameManager.Instance.DeadBodyPrefab);
+            DeadBody deadBody2 = Object.Instantiate<DeadBody>(GameManager.Instance.deadBodyPrefab[0]);
 		    deadBody2.enabled = false;
 		    deadBody2.ParentId = (TransformedPlayer != null) ? TransformedPlayer.PlayerId : doppel.PlayerId;
             Bodies.Add(deadBody2);

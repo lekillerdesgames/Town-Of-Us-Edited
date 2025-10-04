@@ -464,7 +464,7 @@ namespace TownOfUsEdited.NeutralRoles.AmnesiacMod
             else if (role == RoleEnum.Detective)
             {
                 var detectiveRole = Role.GetRole<Detective>(amnesiac);
-                detectiveRole.LastExamined = DateTime.UtcNow;
+                detectiveRole.Cooldown = CustomGameOptions.ExamineCd;
                 detectiveRole.CurrentTarget = null;
             }
 

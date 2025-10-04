@@ -22,7 +22,7 @@ namespace TownOfUsEdited.CrewmateRoles.AstralMod
                 var abilityUsed = Utils.AbilityUsed(PlayerControl.LocalPlayer);
                 if (!abilityUsed) return false;
                 role.TimeRemaining = CustomGameOptions.GhostDuration;
-                role.TurnGhost(PlayerControl.LocalPlayer);
+                role.Die(PlayerControl.LocalPlayer);
                 Utils.Rpc(CustomRPC.TurnGhost, PlayerControl.LocalPlayer.PlayerId);
                 return false;
             }

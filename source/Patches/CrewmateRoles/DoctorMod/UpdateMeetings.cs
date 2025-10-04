@@ -52,7 +52,6 @@ namespace TownOfUsEdited.CrewmateRoles.DoctorMod
             }
 
             [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
-            
             public static void Postfix(MeetingHud __instance)
             {
                 if (CustomGameOptions.GameMode == GameMode.Chaos) return;

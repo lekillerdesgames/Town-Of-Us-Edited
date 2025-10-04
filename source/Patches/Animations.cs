@@ -85,7 +85,7 @@ namespace TownOfUsEdited.Patches
 
             private static ShapeshifterMinigame GetShapeshifterMenu()
             {
-                var rolePrefab = RoleManager.Instance.AllRoles.First(r => r.Role == RoleTypes.Shapeshifter);
+                var rolePrefab = RoleManager.Instance.AllRoles.ToArray().First(r => r.Role == RoleTypes.Shapeshifter);
                 return GameObject.Instantiate(rolePrefab?.Cast<ShapeshifterRole>(), GameData.Instance.transform).ShapeshifterMenu;
             }
 
@@ -212,7 +212,8 @@ namespace TownOfUsEdited.Patches
             else if (controller == sleepyController) scale = new Vector2(0.4f, 0.4f);
             _object.transform.localScale *= scale;
             _object.gameObject.AddComponent<SpriteRenderer>().material = new Material(Shader.Find("Unlit/PlayerShader"));
-            PlayerMaterial.SetColors(player.Data.DefaultOutfit.ColorId, _object.gameObject.GetComponent<SpriteRenderer>());
+            if (!Utils.CommsCamouflaged()) PlayerMaterial.SetColors(player.GetOutfit(player.GetCustomOutfitType()).ColorId, _object.gameObject.GetComponent<SpriteRenderer>());
+            else PlayerMaterial.SetColors(Color.gray, _object.gameObject.GetComponent<SpriteRenderer>());
             _object.gameObject.GetComponent<SpriteRenderer>().flipX = player.myRend().flipX;
             _object.gameObject.AddComponent<Animator>().runtimeAnimatorController = controller;
             _object.gameObject.SetActive(true);

@@ -77,9 +77,12 @@ namespace TownOfUsEdited.CrewmateRoles.MedicMod
             var medicrole = Role.GetRole<Medic>(PlayerControl.LocalPlayer);
             foreach (var voteArea in __instance.playerStates)
             {
-                try {
+                try
+                {
                     GenButton(medicrole, voteArea);
-                } catch {
+                }
+                catch
+                {
                 }
             }
         }

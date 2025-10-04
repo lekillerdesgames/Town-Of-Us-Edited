@@ -275,7 +275,7 @@ namespace TownOfUsEdited.CrewmateRoles.VampireHunterMod
             else if (roleEnum == RoleEnum.Detective)
             {
                 var detectiveRole = Role.GetRole<Detective>(oldVamp);
-                detectiveRole.LastExamined = DateTime.UtcNow;
+                detectiveRole.Cooldown = CustomGameOptions.ExamineCd;
                 detectiveRole.CurrentTarget = null;
             }
 

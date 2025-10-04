@@ -12,10 +12,16 @@ namespace TownOfUsEdited.CrewmateRoles.AstralMod
         {
             foreach (var role in Role.GetRoles(RoleEnum.Astral))
             {
-                var astral = (Astral) role;
+                var astral = (Astral)role;
                 if (astral.UsingGhost)
-                    astral.TurnGhost(role.Player);
-                else if (astral.Enabled) astral.TurnBack(role.Player);
+                {
+                    astral.DecreaseCD();
+                }
+                else if (astral.Enabled)
+                {
+                    astral.Revive(role.Player);
+                    astral.ResetCD();
+                }
             }
         }
     }

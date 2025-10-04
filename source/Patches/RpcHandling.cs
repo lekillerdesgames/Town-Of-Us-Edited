@@ -1664,10 +1664,10 @@ namespace TownOfUsEdited
                                 var jailedPlayer2 = jailorRole3.JailedPlayer;
                                 if (PlayerControl.LocalPlayer == jailedPlayer2)
                                 {
-                                    jailorRole3.JailedPlayer = null;
                                     JailorChat.UpdateJailorChat();
                                     HudManager.Instance.ShowPopUp("The Jailor has decided to release you... for now...");
                                 }
+                                jailorRole3.JailedPlayer = null;
                                 break;
 
                             case CustomRPC.SpiritKill:
@@ -2289,8 +2289,8 @@ namespace TownOfUsEdited
                             case CustomRPC.TurnGhost:
                                 var astral = Utils.PlayerById(reader.ReadByte());
                                 var astralRole = Role.GetRole<Astral>(astral);
+                                astralRole.Die(astral);
                                 astralRole.TimeRemaining = CustomGameOptions.GhostDuration;
-                                astralRole.TurnGhost(astral);
                                 break;
                             case CustomRPC.Vest:
                                 var surv = Utils.PlayerById(reader.ReadByte());
@@ -3099,7 +3099,7 @@ namespace TownOfUsEdited
                 }
 
                 // Get Impostors Count
-                    int __result = 0;
+                int __result = 0;
                 if (CustomGameOptions.GameMode == GameMode.Cultist || CustomGameOptions.GameMode == GameMode.Chaos)
                 {
                     __result = 1;
@@ -3111,6 +3111,7 @@ namespace TownOfUsEdited
                 else if (CustomGameOptions.GameMode == GameMode.RoleList)
                 {
                     List<RoleOptions> buckets = [CustomGameOptions.Slot1, CustomGameOptions.Slot2, CustomGameOptions.Slot3, CustomGameOptions.Slot4];
+                    List<RoleOptions> impBuckets = [RoleOptions.ImpConceal, RoleOptions.ImpKilling, RoleOptions.ImpSupport, RoleOptions.ImpCommon, RoleOptions.ImpRandom];
                     var anySlots = 0;
                     var players = GameData.Instance.PlayerCount;
 
@@ -3128,7 +3129,8 @@ namespace TownOfUsEdited
 
                     foreach (var roleOption in buckets)
                     {
-                        if (roleOption == RoleOptions.Any) anySlots += 1;
+                        if (impBuckets.Contains(roleOption)) __result += 1;
+                        else if (roleOption == RoleOptions.Any) anySlots += 1;
                     }
 
                     int impProbability = (int)Math.Floor((double)players / anySlots * 5 / 3);
@@ -3139,7 +3141,11 @@ namespace TownOfUsEdited
                         impProbability += 3;
                     }
 
-                    if (__result == 0) __result = 1;
+                    if (players < 7 || __result == 0) __result = 1;
+                    else if (players < 10 && __result > 2) __result = 2;
+                    else if (players < 14 && __result > 3) __result = 3;
+                    else if (players < 19 && __result > 4) __result = 4;
+                    else if (__result > 5) __result = 5;
                 }
                 else __result = GameOptionsManager.Instance.currentNormalGameOptions.NumImpostors;
 

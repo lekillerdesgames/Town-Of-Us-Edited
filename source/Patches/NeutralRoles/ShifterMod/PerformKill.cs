@@ -663,7 +663,7 @@ namespace TownOfUsEdited.Patches.NeutralRoles.ShifterMod
             else if (role == RoleEnum.Detective)
             {
                 var detectiveRole = Role.GetRole<Detective>(shifter);
-                detectiveRole.LastExamined = DateTime.UtcNow;
+                detectiveRole.Cooldown = CustomGameOptions.ExamineCd;
                 detectiveRole.CurrentTarget = null;
             }
 

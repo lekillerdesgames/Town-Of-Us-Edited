@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using Il2CppInterop.Runtime;
 using Reactor.Utilities.Extensions;
 using TMPro;
 using TownOfUsEdited.Extensions;
@@ -13,7 +12,7 @@ namespace TownOfUsEdited.Patches
 {
     [HarmonyPatch]
 
-    public class AprilFoolsPatches
+    public static class AprilFoolsPatches
     {
         public static bool IsAprilFools()
         {
@@ -29,18 +28,20 @@ namespace TownOfUsEdited.Patches
             }
             catch
             {
+                // Whatever
             }
             return false;
         }
-        public static int CurrentMode = 0;
+        public static int CurrentMode;
         public static Dictionary<byte, GameObject> Hehs = new Dictionary<byte, GameObject>();
         public static float OriginalFlipX = 0f;
 
-        public static Dictionary<int, string> Modes = new()
+        private static Dictionary<int, string> Modes = new()
         {
             {0, "Off"},
             {1, "Horse"},
-            {2, "Long"}
+            {2, "Long"},
+            {3, "Long Horse"}
         };
 
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
@@ -105,7 +106,6 @@ namespace TownOfUsEdited.Patches
         {
             if (__instance.newsButton != null)
             {
-
                 var aprilfoolstoggle = UnityEngine.Object.Instantiate(__instance.newsButton, null);
                 aprilfoolstoggle.name = "aprilfoolstoggle";
 
@@ -122,7 +122,7 @@ namespace TownOfUsEdited.Patches
                 passive.OnClick.AddListener((Action)(() =>
                 {
                     int num = CurrentMode + 1;
-                    CurrentMode = num > 2 ? 0 : num;
+                    CurrentMode = num > 3 ? 0 : num;
                     var text = aprilfoolstoggle.transform.GetChild(0).GetChild(0).GetComponent<TextMeshPro>();
                     text.text = $"April fools mode: {Modes[CurrentMode]}";
                 }));
@@ -135,7 +135,7 @@ namespace TownOfUsEdited.Patches
                 })));
 
                 aprilfoolstoggle.transform.GetChild(0).transform.localScale = new Vector3(aprilfoolstoggle.transform.localScale.x + 1, 1f, 1f);
-                aprilfoolstoggle.transform.GetChild(0).transform.localPosition -= new Vector3(1.5f,0f,0f);
+                aprilfoolstoggle.transform.GetChild(0).transform.localPosition -= new Vector3(1.5f, 0f, 0f);
                 aprilfoolstoggle.transform.GetChild(1).GetChild(0).GetComponent<SpriteRenderer>().sprite = null;
                 aprilfoolstoggle.transform.GetChild(2).GetChild(0).GetComponent<SpriteRenderer>().sprite = null;
                 aprilfoolstoggle.GetComponent<NewsCountButton>().DestroyImmediate();
@@ -143,8 +143,18 @@ namespace TownOfUsEdited.Patches
             }
         }
 
+        [HarmonyPatch(typeof(AprilFoolsMode), nameof(AprilFoolsMode.ShouldLongAround))]
+        [HarmonyPrefix]
+
+        public static bool Prefix(ref bool __result)
+        {
+            __result = CurrentMode == 2;
+            return true;
+        }
+
         [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.SetBodyType))]
         [HarmonyPrefix]
+
         public static void Prefix(ref PlayerBodyTypes bodyType)
         {
             switch (CurrentMode)
@@ -155,110 +165,9 @@ namespace TownOfUsEdited.Patches
                 case 2:
                     bodyType = PlayerBodyTypes.Long;
                     break;
-            }
-        }
-
-        public class LongModePatches
-        {
-            [HarmonyPatch(typeof(LongBoiPlayerBody), nameof(LongBoiPlayerBody.Awake))]
-            [HarmonyPrefix]
-            public static bool Prefix(LongBoiPlayerBody __instance)
-            {
-                if (CurrentMode != 2) return false;
-                __instance.cosmeticLayer.OnSetBodyAsGhost += DelegateSupport.ConvertDelegate<Il2CppSystem.Action>(__instance.SetPoolableGhost);
-                __instance.cosmeticLayer.OnColorChange += DelegateSupport.ConvertDelegate<Il2CppSystem.Action<int>>(__instance.SetHeightFromColor);
-                __instance.cosmeticLayer.OnCosmeticSet += DelegateSupport.ConvertDelegate<Il2CppSystem.Action<string, int, CosmeticsLayer.CosmeticKind>>(__instance.OnCosmeticSet);
-                return false;
-            }
-
-            [HarmonyPatch(typeof(LongBoiPlayerBody), nameof(LongBoiPlayerBody.OnDestroy))]
-            [HarmonyPrefix]
-            public static bool Prefix2(LongBoiPlayerBody __instance)
-            {
-                if (CurrentMode != 2) return false;
-                __instance.cosmeticLayer.OnSetBodyAsGhost -= DelegateSupport.ConvertDelegate<Il2CppSystem.Action>(__instance.SetPoolableGhost);
-                __instance.cosmeticLayer.OnColorChange -= DelegateSupport.ConvertDelegate<Il2CppSystem.Action<int>>(__instance.SetHeightFromColor);
-                __instance.cosmeticLayer.OnCosmeticSet -= DelegateSupport.ConvertDelegate<Il2CppSystem.Action<string, int, CosmeticsLayer.CosmeticKind>>(__instance.OnCosmeticSet);
-                return false;
-            }
-
-            [HarmonyPatch(typeof(LongBoiPlayerBody), nameof(LongBoiPlayerBody.Start))]
-            [HarmonyPrefix]
-            public static bool Prefix3(LongBoiPlayerBody __instance)
-            {
-                if (CurrentMode != 2)
-                {
-                    __instance.ShouldLongAround = false;
-                    __instance.headSprite.gameObject.SetActive(false);
-                    __instance.neckSprite.gameObject.SetActive(false);
-                    __instance.foregroundNeckSprite.gameObject.SetActive(false);
-                    return false;
-                }
-                __instance.ShouldLongAround = true;
-                if (__instance.hideCosmeticsQC)
-                {
-                    __instance.cosmeticLayer.SetHatVisorVisible(false);
-                }
-                __instance.SetupNeckGrowth(false, true);
-                if (__instance.isExiledPlayer)
-                {
-                    ShipStatus instance = ShipStatus.Instance;
-                    if (instance == null || instance.Type != ShipStatus.MapType.Fungle)
-                    {
-                        __instance.cosmeticLayer.AdjustCosmeticRotations(-17.75f);
-                    }
-                }
-                if (!__instance.isPoolablePlayer)
-                {
-                    __instance.cosmeticLayer.ValidateCosmetics();
-                }
-                return false;
-            }
-
-            [HarmonyPatch(typeof(HatManager), nameof(HatManager.CheckLongModeValidCosmetic))]
-            [HarmonyPrefix]
-
-            public static bool Prefix4(HatManager __instance, [HarmonyArgument(0)] string cosmeticID, [HarmonyArgument(1)] bool ignoreLongMode, ref bool __result)
-            {
-                if (CurrentMode != 2)
-                {
-                    __result = true;
-                    return false;
-                }
-                if (ignoreLongMode)
-                {
-                    __result = true;
-                    return false;
-                }
-                foreach (var data in __instance.longModeBlackList)
-                {
-                    if (string.Equals(data.ProdId, cosmeticID))
-                    {
-                        __result = false;
-                        return false;
-                    }
-                }
-                __result = true;
-                return false;
-            }
-
-            [HarmonyPatch(typeof(CosmeticsLayer), nameof(CosmeticsLayer.SetSkin))]
-            [HarmonyPrefix]
-
-            public static bool Prefix5(CosmeticsLayer __instance, [HarmonyArgument(0)] SkinData skin, [HarmonyArgument(1)] int color, [HarmonyArgument(2)] Action onLoaded)
-            {
-                if (CurrentMode != 2) return true;
-                if (!__instance.skin)
-                {
-                    return false;
-                }
-                if (__instance.GetLongBoi() != null && !__instance.GetLongBoi().ValidateSkin(skin.ProdId, color))
-                {
-                    skin = DestroyableSingleton<HatManager>.Instance.GetSkinById("skin_None");
-                }
-                __instance.skin.SetSkin(skin, color, __instance.currentBodySprite.BodySprite.flipX, __instance, onLoaded);
-                __instance.skin.Flipped = __instance.currentBodySprite.BodySprite.flipX;
-                return false;
+                case 3:
+                    bodyType = PlayerBodyTypes.LongSeeker;
+                    break;
             }
         }
 
@@ -275,23 +184,8 @@ namespace TownOfUsEdited.Patches
                 case 2:
                     __result = PlayerBodyTypes.Long;
                     return false;
-                default:
-                    return true;
-            }
-        }
-
-        [HarmonyPatch(typeof(NormalGameManager), nameof(NormalGameManager.GetBodyType))]
-        [HarmonyPrefix]
-
-        public static bool Prefix3(ref PlayerBodyTypes __result)
-        {
-            switch (CurrentMode)
-            {
-                case 1:
-                    __result = PlayerBodyTypes.Horse;
-                    return false;
-                case 2:
-                    __result = PlayerBodyTypes.Long;
+                case 3:
+                    __result = PlayerBodyTypes.LongSeeker;
                     return false;
                 default:
                     return true;
@@ -299,3 +193,4 @@ namespace TownOfUsEdited.Patches
         }
     }
 }
+

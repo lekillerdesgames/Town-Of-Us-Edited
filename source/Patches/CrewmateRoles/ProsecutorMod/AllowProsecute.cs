@@ -116,6 +116,19 @@ namespace TownOfUsEdited.CrewmateRoles.ProsecutorMod
                             {
                                 Utils.ShowDeadBodies = true;
                             }
+                            if (prosecutor.Player.IsLover() && CustomGameOptions.BothLoversDie)
+                            {
+                                var otherlover = Modifier.GetModifier<Lover>(prosecutor.Player).OtherLover;
+                                otherlover.Player.Exiled();
+                                UpdateProsecuted(otherlover.Player);
+                                var otherloverRole = Role.GetRole(otherlover.Player);
+                                otherloverRole.DeathReason = DeathReasons.Suicided;
+                                Utils.Rpc(CustomRPC.SetDeathReason, otherlover.Player.PlayerId, (byte)DeathReasons.Suicided);
+                                if (PlayerControl.LocalPlayer == otherlover.Player)
+                                {
+                                    Utils.ShowDeadBodies = true;
+                                }
+                            }
                         }
                         if (VotedPlayer.IsLover() && CustomGameOptions.BothLoversDie)
                         {
@@ -214,6 +227,12 @@ namespace TownOfUsEdited.CrewmateRoles.ProsecutorMod
                 }
                 player.Die(DeathReason.Kill, false);
                 var voteArea = MeetingHud.Instance.playerStates.FirstOrDefault(x => x.TargetPlayerId == player.PlayerId);
+                if (voteArea.DidVote) voteArea.UnsetVote();
+                voteArea.AmDead = true;
+                voteArea.Overlay.gameObject.SetActive(true);
+                voteArea.Overlay.color = Color.white;
+                voteArea.XMark.gameObject.SetActive(true);
+                voteArea.XMark.transform.localScale = Vector3.one;
 
                 var blackmailers = Role.AllRoles.Where(x => x.RoleType == RoleEnum.Blackmailer && x.Player != null).Cast<Blackmailer>();
                 var blackmailed = new List<PlayerControl>();

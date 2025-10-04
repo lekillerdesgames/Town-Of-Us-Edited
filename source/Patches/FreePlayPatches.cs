@@ -497,17 +497,14 @@ namespace TownOfUsEdited.Patches
                 var num = 0f;
                 var num2 = 0f;
                 var num3 = 0f;
-                for (var k = 0; k < taskFolder.SubFolders.Count; k++)
+                for (int k = 0; k < taskFolder.SubFolders.Count; k++)
                 {
-                    var taskFolder2 = Object.Instantiate(taskFolder.SubFolders.ToArray()[k], __instance.TaskParent);
-                    var folderTransform = taskFolder2.transform;
-
+                    TaskFolder taskFolder2 = Object.Instantiate<TaskFolder>(taskFolder.SubFolders[k], __instance.TaskParent);
                     taskFolder2.gameObject.SetActive(true);
                     taskFolder2.Parent = __instance;
-
-                    folderTransform.localPosition = new Vector3(num, num2, 0f);
-                    folderTransform.localScale = Vector3.one;
-                    num3 = Mathf.Max(num3, taskFolder2.Text.bounds.size.y + 1.3f);
+                    taskFolder2.transform.localPosition = new Vector3(num, num2, 0f);
+                    taskFolder2.transform.localScale = Vector3.one;
+                    num3 = Mathf.Max(num3, taskFolder2.Text.bounds.size.y + 1.1f);
                     num += __instance.folderWidth;
                     if (num > __instance.lineWidth)
                     {
@@ -515,23 +512,15 @@ namespace TownOfUsEdited.Patches
                         num2 -= num3;
                         num3 = 0f;
                     }
-
-                    __instance.ActiveItems.Add(folderTransform);
-                    if (!taskFolder2 || !taskFolder2.Button)
+                    __instance.ActiveItems.Add(taskFolder2.transform);
+                    if (taskFolder2 != null && taskFolder2.Button != null)
                     {
-                        continue;
-                    }
-
-                    ControllerManager.Instance.AddSelectableUiElement(taskFolder2.Button);
-                    if (!string.IsNullOrEmpty(__instance.restorePreviousSelectionByFolderName) &&
-                        taskFolder2.FolderName.Equals(__instance.restorePreviousSelectionByFolderName, StringComparison.Ordinal))
-                    {
-                        __instance.restorePreviousSelectionFound = taskFolder2.Button;
+                        ControllerManager.Instance.AddSelectableUiElement(taskFolder2.Button, false);
                     }
                 }
 
                 var flag = false;
-                var list = taskFolder.Children.ToArray().OrderBy(t => t.TaskType).ToList();
+                var list = taskFolder.TaskChildren.ToArray().OrderBy(t => t.TaskType).ToList();
 
                 for (var l = 0; l < list.Count; l++)
                 {
@@ -573,13 +562,6 @@ namespace TownOfUsEdited.Patches
                     if (__instance.Hierarchy.Count == 1 || flag)
                     {
                         continue;
-                    }
-
-                    var component =
-                        ControllerManager.Instance.CurrentUiState.CurrentSelection.GetComponent<TaskFolder>();
-                    if (component != null)
-                    {
-                        __instance.restorePreviousSelectionByFolderName = component.FolderName;
                     }
 
                     ControllerManager.Instance.SetDefaultSelection(taskAddButton.Button);
@@ -891,21 +873,37 @@ namespace TownOfUsEdited.Patches
                 rolesFolder.gameObject.SetActive(false);
                 rolesFolder.FolderName = "Crewmate Roles";
                 rolesFolder.name = "CrewsFolder";
+                rolesFolder.currentFolderColor = Palette.CrewmateBlue;
+                rolesFolder.folderSpriteRenderer.color = rolesFolder.currentFolderColor;
+		        rolesFolder.buttonRolloverHandler.OutColor = rolesFolder.currentFolderColor;
+		        rolesFolder.buttonRolloverHandler.UnselectedColor = rolesFolder.currentFolderColor;
 
                 var rolesFolder2 = Object.Instantiate(__instance.RootFolderPrefab, Scroller.Inner);
                 rolesFolder2.gameObject.SetActive(false);
                 rolesFolder2.FolderName = "Impostor Roles";
                 rolesFolder2.name = "ImpsFolder";
+                rolesFolder2.currentFolderColor = Palette.ImpostorRed;
+                rolesFolder2.folderSpriteRenderer.color = rolesFolder2.currentFolderColor;
+		        rolesFolder2.buttonRolloverHandler.OutColor = rolesFolder2.currentFolderColor;
+		        rolesFolder2.buttonRolloverHandler.UnselectedColor = rolesFolder2.currentFolderColor;
 
                 var rolesFolder3 = Object.Instantiate(__instance.RootFolderPrefab, Scroller.Inner);
                 rolesFolder3.gameObject.SetActive(false);
                 rolesFolder3.FolderName = "Neutral Roles";
                 rolesFolder3.name = "NeutsFolder";
+                rolesFolder3.currentFolderColor = Color.gray;
+                rolesFolder3.folderSpriteRenderer.color = rolesFolder3.currentFolderColor;
+		        rolesFolder3.buttonRolloverHandler.OutColor = rolesFolder3.currentFolderColor;
+		        rolesFolder3.buttonRolloverHandler.UnselectedColor = rolesFolder3.currentFolderColor;
 
                 var rolesFolder4 = Object.Instantiate(__instance.RootFolderPrefab, Scroller.Inner);
                 rolesFolder4.gameObject.SetActive(false);
                 rolesFolder4.FolderName = "Coven Roles";
                 rolesFolder4.name = "CovensFolder";
+                rolesFolder4.currentFolderColor = Colors.Coven;
+                rolesFolder4.folderSpriteRenderer.color = rolesFolder4.currentFolderColor;
+		        rolesFolder4.buttonRolloverHandler.OutColor = rolesFolder4.currentFolderColor;
+		        rolesFolder4.buttonRolloverHandler.UnselectedColor = rolesFolder4.currentFolderColor;
 
                 __instance.Root.SubFolders.Add(rolesFolder);
                 __instance.Root.SubFolders.Add(rolesFolder2);
@@ -935,6 +933,15 @@ namespace TownOfUsEdited.Patches
             }
 
             instance.ActiveItems.Add(item.transform);
+        }
+        [HarmonyPatch(typeof(TaskAdderGame), nameof(TaskAdderGame.PopulateRoot))]
+        public class TaskAdderRolesPatch
+        {
+            public static bool Prefix([HarmonyArgument(0)] TaskAdderGame.FolderType folderType)
+            {
+                if (folderType == TaskAdderGame.FolderType.Roles) return false;
+                return true;
+            }
         }
         [HarmonyPatch(typeof(TutorialManager), nameof(TutorialManager.Awake))]
         public class StartFreeplayPatch

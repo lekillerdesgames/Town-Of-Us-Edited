@@ -1,3 +1,5 @@
+using TMPro;
+
 namespace TownOfUsEdited.Roles.Modifiers
 {
     public class Vengeful : Modifier
@@ -11,6 +13,7 @@ namespace TownOfUsEdited.Roles.Modifiers
         }
 
         public bool UsedAbility = false;
+        public TextMeshPro KillText;
 
         public KillButton KillButton;
         public PlayerControl ClosestPlayer;
